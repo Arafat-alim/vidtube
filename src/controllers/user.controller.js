@@ -230,4 +230,31 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, handleLogin, refreshAccessToken };
+const handleLogout = asyncHandler(async (req, res) => {
+  // Force update with $set to empty string
+
+  console.log("req.user._id_", req.user._id);
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: {
+        refreshToken: 1, // Using $unset is better for removing fields
+      }, // Explicitly set to empty string
+    },
+    { new: true }
+  );
+
+  // Clear cookies
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
+
+export { registerUser, handleLogin, refreshAccessToken, handleLogout };
