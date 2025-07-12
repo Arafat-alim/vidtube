@@ -155,8 +155,15 @@ const handleLogin = asyncHandler(async (req, res, next) => {
       throw new ApiError(404, "User not found");
     }
 
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    };
+
     return res
       .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
