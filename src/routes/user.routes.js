@@ -24,6 +24,8 @@ userRouter.route("/register").post(
 );
 
 userRouter.route("/login").post(handleLogin);
+
+//! secured routes
 userRouter.route("/logout").get(verifyAccessToken, handleLogout);
 
 export { userRouter };
